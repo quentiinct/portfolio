@@ -18,13 +18,49 @@
 }
 
 body {
+  position: relative;
   background:
-    radial-gradient(ellipse at 75% 55%, rgba(222, 62, 74, 0.12) 0%, transparent 55%),
-    #0a0a0a;
+    radial-gradient(ellipse at 75% 55%, rgba(222, 62, 74, 0.09) 0%, transparent 55%),
+    radial-gradient(ellipse at 12% 15%, rgba(222, 62, 74, 0.05) 0%, transparent 35%),
+    #050505;
   color: #ededed;
   font-family: var(--font-geist-sans), Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+/* GRID BACKGROUND — commenté temporairement
+/*
+  Grille plate discrète sur toute la page.
+  Deux linear-gradient croisés forment les lignes horizontales et verticales.
+  Une radial-gradient au centre de chaque cellule donne un léger effet
+  "tuile surélevée" (centre légèrement plus clair que les bords).
+* /
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.80) 1px, transparent 10px),
+    linear-gradient(to right,  rgba(0, 0, 0, 0.80) 1px, transparent 10px),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.035)  0%,
+      rgba(255, 255, 255, 0.01)  45%,
+      rgba(0,   0,   0,   0.08) 55%,
+      rgba(0,   0,   0,   0.13) 100%
+    );
+  background-size: 50px 50px, 50px 50px, 50px 50px;
+}
+*/
+
+/* Tout le contenu passe au-dessus de la grille */
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
 
 * {
   box-sizing: border-box;

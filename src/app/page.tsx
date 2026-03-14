@@ -113,6 +113,81 @@ function WIPBadge() {
 // SECTIONS
 // ═══════════════════════════════════════════════════════════════
 
+// ─── TERMINAL WIDGET ──────────────────────────────────────────
+// Fond : Matrix rain sur canvas (continu, ralenti en idle).
+// Hover terminal : accélère la pluie + couleur rouge près du curseur.
+// Hover ligne individuelle : translateX.
+
+const TERMINAL_LINES = [
+  { prompt: "$", text: "last deploy", dim: true },
+  { prompt: ">", text: "portfolio v1", tag: "LIVE" },
+  { prompt: "$", text: "currently building", dim: true },
+  { prompt: ">", text: "m3h web page", tag: "WIP" },
+];
+
+function TerminalWidget() {
+  const [activeLine, setActiveLine] = useState<number | null>(null);
+
+  return (
+    <div
+      className="overflow-hidden rounded-xl border border-white/5 bg-black/40 p-3 font-mono text-xs"
+      onMouseLeave={() => setActiveLine(null)}
+    >
+      <div>
+        {/* Header macOS dots */}
+        <div className="mb-3 flex items-center gap-1.5">
+          <div className="h-2 w-2 rounded-full bg-white/10" />
+          <div className="h-2 w-2 rounded-full bg-white/10" />
+          <div className="h-2 w-2 rounded-full bg-white/10" />
+          <span className="ml-2 text-[10px] text-zinc-600">quentin@portfolio ~ zsh</span>
+        </div>
+
+        {TERMINAL_LINES.map((line, i) => (
+          <div
+            key={i}
+            className="flex cursor-default items-center gap-2 py-[3px]"
+            style={{
+              transform:  activeLine === i ? "translateX(6px)" : "translateX(0)",
+              opacity:    line.dim ? (activeLine === i ? 0.7 : 0.35) : 1,
+              transition: "transform 0.2s ease, opacity 0.2s ease",
+            }}
+            onMouseEnter={() => setActiveLine(i)}
+            onMouseLeave={() => setActiveLine(null)}
+          >
+            <span style={{ color: activeLine === i ? "#DE3E4A" : "#52525b" }}>{line.prompt}</span>
+            <span
+              className="text-zinc-300"
+              style={
+                !line.dim && activeLine === i
+                  ? { textShadow: "0 0 10px rgba(255,255,255,0.55)", color: "#ffffff" }
+                  : undefined
+              }
+            >
+              {line.text}
+            </span>
+            {line.tag && (
+              <span
+                className="ml-auto rounded px-1.5 py-0.5 text-[9px] font-semibold"
+                style={{
+                  backgroundColor: line.tag === "WIP" ? "rgba(222,62,74,0.12)" : "rgba(74,222,128,0.12)",
+                  color:           line.tag === "WIP" ? "#DE3E4A"              : "#4ade80",
+                }}
+              >
+                {line.tag}
+              </span>
+            )}
+          </div>
+        ))}
+
+        <div className="mt-2 flex items-center gap-2">
+          <span style={{ color: "#DE3E4A" }}>$</span>
+          <span className="animate-pulse text-zinc-400">█</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── HERO ─────────────────────────────────────────────────────
 // Memoji : idle.png affiché par défaut, wink.gif swappé au hover.
 // Le changement de `gifKey` force React à re-monter le <img>,
@@ -123,47 +198,77 @@ function HeroCard() {
 
   return (
     <BentoCard className="col-span-12 flex flex-col md:col-span-4 md:row-span-3 md:h-full">
-      <div>
-        <SectionLabel text="Portfolio" />
-        <h1 className="mb-4 text-5xl font-semibold tracking-tight text-white">
+      <SectionLabel text="Portfolio" />
+
+      {/* Badge disponibilité */}
+      <div className="mt-2 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1" style={{ backgroundColor: "rgba(255,255,255,0.06)" }}>
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+        </span>
+        <span className="text-xs text-zinc-300">Available to work</span>
+      </div>
+
+      {/* Nom + memoji en accompagnement */}
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <h1 className="text-5xl font-semibold tracking-tight text-white">
           Quentin<span style={{ color: "#DE3E4A" }}>.</span>
         </h1>
-        <p className="text-[15px] leading-relaxed text-zinc-400">
-          I build tools, agents, and systems •
-          focused on AI and cybersecurity.
-          I want the logic to hold and the code to be clean. Not done until both are right.
-        </p>
+        {/* Deux images superposées en position relative/absolute.
+            On crossfade l'opacité plutôt que de swapper le src —
+            aucun remount, aucun flash quelle que soit la frame du GIF. */}
+        <div
+          className="relative w-30 cursor-pointer select-none"
+          style={{
+            transform: hovered ? "translateY(-4px) scale(1.05)" : "translateY(0px) scale(1)",
+            transition: "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          }}
+          onMouseEnter={() => { setHovered(true); setGifKey((k) => k + 1); }}
+          onMouseLeave={() => setHovered(false)}
+        >
+          {/* idle — toujours dans le DOM */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/memoji/frame-01.PNG"
+            alt="Memoji Quentin"
+            className="w-full rounded-2xl"
+            style={{ opacity: hovered ? 0 : 1, transition: "opacity 0.15s ease" }}
+            draggable={false}
+          />
+          {/* GIF — superposé, key change au mouseEnter pour repartir de 0 */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            key={gifKey}
+            src="/memoji/memogif.gif"
+            alt=""
+            aria-hidden
+            className="absolute inset-0 w-full rounded-2xl"
+            style={{ opacity: hovered ? 1 : 0, transition: "opacity 0.15s ease" }}
+            draggable={false}
+          />
+        </div>
       </div>
 
-      {/* Memoji — centré, occupe l'espace vertical libre.
-          Hover : redémarre le GIF depuis le début via changement de key + scale.
-          Pour l'état idle, pose frame-01.png dans public/memoji/ ;
-          en attendant, le GIF tourne en boucle. */}
-      <div
-        className="flex flex-1 cursor-pointer items-center justify-center py-4"
-        onMouseEnter={() => { setHovered(true); setGifKey((k) => k + 1); }}
-        onMouseLeave={() => setHovered(false)}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          key={hovered ? gifKey : "idle"}
-          src={hovered ? "/memoji/memogif.gif" : "/memoji/frame-01.PNG"}
-          alt="Memoji Quentin"
-          className="w-40 select-none rounded-2xl drop-shadow-2xl transition-transform duration-300"
-          style={{ transform: hovered ? "scale(1.08)" : "scale(1)" }}
-          draggable={false}
-        />
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {["Montage Vidéo", "Développement", "Cybersécurité", "IA"].map((tag) => (
-          <span
-            key={tag}
-            className="rounded-full bg-white/5 px-3 py-1 text-xs text-zinc-400"
-          >
-            {tag}
-          </span>
-        ))}
+      {/* Description + terminal + tags */}
+      <div className="mt-5 flex flex-1 flex-col justify-between">
+        <div>
+          <p className="mb-4 text-[15px] leading-relaxed text-zinc-400">
+            I build tools, agents, and systems •
+            focused on AI and cybersecurity.
+            I want the logic to hold and the code to be clean. Not done until both are right.
+          </p>
+          <TerminalWidget />
+        </div>
+        <div className="mt-5 flex gap-1.5">
+          {["Video Editing", "Development", "CyberSecurity", "IA"].map((tag) => (
+            <span
+              key={tag}
+              className={`whitespace-nowrap rounded-full bg-white/5 py-1 text-center text-[11px] text-zinc-400 ${tag === "IA" ? "px-3" : "flex-1"}`}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
       </div>
     </BentoCard>
   );
