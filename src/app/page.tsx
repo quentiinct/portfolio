@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CHANNELS } from "./data";
 
 // ═══════════════════════════════════════════════════════════════
@@ -122,15 +122,70 @@ const TERMINAL_LINES = [
   { prompt: "$", text: "last deploy", dim: true },
   { prompt: ">", text: "portfolio v1", tag: "LIVE" },
   { prompt: "$", text: "currently building", dim: true },
-  { prompt: ">", text: "m3h web page", tag: "WIP" },
+  { prompt: ">", text: "image search", tag: "WIP" },
 ];
+
+const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 function TerminalWidget() {
   const [activeLine, setActiveLine] = useState<number | null>(null);
+  const [revealed, setRevealed] = useState<number[]>(TERMINAL_LINES.map(() => 0));
+  const [typingDone, setTypingDone] = useState(false);
+  const [currentInput, setCurrentInput] = useState("");
+  const [focused, setFocused] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      await delay(400);
+      for (let li = 0; li < TERMINAL_LINES.length; li++) {
+        if (cancelled) return;
+        const text = TERMINAL_LINES[li].text;
+        const speed = TERMINAL_LINES[li].dim ? 28 : 50;
+        for (let ci = 1; ci <= text.length; ci++) {
+          if (cancelled) return;
+          await delay(speed);
+          setRevealed((prev) => {
+            const next = [...prev];
+            next[li] = ci;
+            return next;
+          });
+        }
+        await delay(130);
+      }
+      if (!cancelled) setTypingDone(true);
+    };
+
+    run();
+    return () => { cancelled = true; };
+  }, []);
+
+  const currentTypingLine = !typingDone
+    ? TERMINAL_LINES.findIndex((l, i) => revealed[i] < l.text.length)
+    : -1;
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!typingDone) return;
+    if (e.key === "Backspace") {
+      setCurrentInput((v) => v.slice(0, -1));
+    } else if (e.key === "Enter") {
+      setCurrentInput("");
+    } else if (e.key.length === 1) {
+      setCurrentInput((v) => v + e.key);
+    }
+  };
 
   return (
     <div
-      className="overflow-hidden rounded-xl border border-white/5 bg-black/40 p-3 font-mono text-xs"
+      ref={containerRef}
+      tabIndex={0}
+      className="overflow-hidden rounded-xl border border-white/5 bg-black/40 p-3 font-mono text-xs outline-none"
+      onClick={() => containerRef.current?.focus()}
+      onKeyDown={handleKeyDown}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
       onMouseLeave={() => setActiveLine(null)}
     >
       <div>
@@ -163,9 +218,12 @@ function TerminalWidget() {
                   : undefined
               }
             >
-              {line.text}
+              {line.text.slice(0, revealed[i])}
+              {currentTypingLine === i && (
+                <span className="animate-pulse opacity-60">▍</span>
+              )}
             </span>
-            {line.tag && (
+            {revealed[i] >= line.text.length && line.tag && (
               <span
                 className="ml-auto rounded px-1.5 py-0.5 text-[9px] font-semibold"
                 style={{
@@ -179,9 +237,15 @@ function TerminalWidget() {
           </div>
         ))}
 
-        <div className="mt-2 flex items-center gap-2">
+        <div
+          className="mt-2 flex items-center gap-2"
+          style={{ opacity: typingDone ? 1 : 0, transition: "opacity 0.4s ease" }}
+        >
           <span style={{ color: "#DE3E4A" }}>$</span>
-          <span className="animate-pulse text-zinc-400">█</span>
+          <span className="text-zinc-300">{currentInput}</span>
+          <span
+            className={focused ? "animate-pulse text-zinc-400" : "text-zinc-700"}
+          >█</span>
         </div>
       </div>
     </div>
@@ -195,10 +259,11 @@ function TerminalWidget() {
 function HeroCard() {
   const [hovered, setHovered] = useState(false);
   const [gifKey, setGifKey] = useState(0);
+  const [hoveredTag, setHoveredTag] = useState<string | null>(null);
 
   return (
     <BentoCard className="col-span-12 flex flex-col md:col-span-4 md:row-span-3 md:h-full">
-      <SectionLabel text="Portfolio" />
+      <SectionLabel text="AI • CYBERSECURITY" />
 
       {/* Badge disponibilité */}
       <div className="mt-2 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1" style={{ backgroundColor: "rgba(255,255,255,0.06)" }}>
@@ -218,10 +283,12 @@ function HeroCard() {
             On crossfade l'opacité plutôt que de swapper le src —
             aucun remount, aucun flash quelle que soit la frame du GIF. */}
         <div
-          className="relative w-30 cursor-pointer select-none"
+          className="relative w-27 cursor-pointer select-none rounded-2xl"
           style={{
             transform: hovered ? "translateY(-4px) scale(1.05)" : "translateY(0px) scale(1)",
             transition: "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.12)",
           }}
           onMouseEnter={() => { setHovered(true); setGifKey((k) => k + 1); }}
           onMouseLeave={() => setHovered(false)}
@@ -249,21 +316,37 @@ function HeroCard() {
         </div>
       </div>
 
+      {/* Localisation */}
+      <div className="mt-2 flex items-center gap-1.5 text-[11px] text-zinc-600">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        Bordeaux · Remote
+      </div>
+
       {/* Description + terminal + tags */}
       <div className="mt-5 flex flex-1 flex-col justify-between">
         <div>
-          <p className="mb-4 text-[15px] leading-relaxed text-zinc-400">
-            I build tools, agents, and systems •
-            focused on AI and cybersecurity.
-            I want the logic to hold and the code to be clean. Not done until both are right.
+          <p className="mb-6 text-[15px] leading-relaxed text-zinc-400">
+            I build AI tools and secure systems for real-world use.
+            <br />
+            Useful. Reliable. Built clean.
           </p>
           <TerminalWidget />
         </div>
         <div className="mt-5 flex gap-1.5">
-          {["Video Editing", "Development", "CyberSecurity", "IA"].map((tag) => (
+          {["Video Editing", "Development", "CyberSecurity", "AI"].map((tag) => (
             <span
               key={tag}
-              className={`whitespace-nowrap rounded-full bg-white/5 py-1 text-center text-[11px] text-zinc-400 ${tag === "IA" ? "px-3" : "flex-1"}`}
+              className={`whitespace-nowrap rounded-full py-1 text-center text-[11px] cursor-default ${tag === "AI" ? "px-3" : "flex-1"}`}
+              style={{
+                backgroundColor: hoveredTag === tag ? "rgba(222,62,74,0.1)" : "rgba(255,255,255,0.05)",
+                color: hoveredTag === tag ? "#DE3E4A" : "#a1a1aa",
+                transition: "background-color 0.15s ease, color 0.15s ease",
+              }}
+              onMouseEnter={() => setHoveredTag(tag)}
+              onMouseLeave={() => setHoveredTag(null)}
             >
               {tag}
             </span>
