@@ -571,17 +571,38 @@ function GitHubCard() {
   const [direction, setDirection] = useState(0); // -1 = prev, 1 = next
 
   useEffect(() => {
-    fetch("https://api.github.com/users/quentiinct/repos?sort=updated&per_page=20")
-      .then((r) => r.json())
-      .then((data: Repo[]) => {
-        // Filtre les forks, trie par étoiles décroissantes
+    const CACHE_KEY = "gh_repos_cache";
+    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+    const load = async () => {
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const { ts, data } = JSON.parse(cached);
+          if (Date.now() - ts < CACHE_TTL) {
+            setRepos(data);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch { /* localStorage indisponible ou JSON invalide */ }
+
+      try {
+        const r = await fetch("https://api.github.com/users/quentiinct/repos?sort=updated&per_page=20");
+        const data: Repo[] = await r.json();
         const filtered = data
-          .filter((r) => !("fork" in r && (r as unknown as { fork: boolean }).fork))
+          .filter((repo) => !("fork" in repo && (repo as unknown as { fork: boolean }).fork))
           .sort((a, b) => b.stargazers_count - a.stargazers_count);
         setRepos(filtered);
-      })
-      .catch(() => setRepos([]))
-      .finally(() => setLoading(false));
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: filtered })); } catch { /* quota */ }
+      } catch {
+        setRepos([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
   }, []);
 
   const prev = () => {
