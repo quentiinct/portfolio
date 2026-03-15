@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://quentincourtade.com"),
+  icons: { icon: "/favicon.svg" },
   title: "Quentin Courtade — Video Editor & Developer",
   description:
     "Freelance video editor working with YouTube creators from 7K to 750K subs. Editing, motion design & web dev.",
