@@ -71,8 +71,8 @@ function BentoCard({ children, className = "" }: { children: React.ReactNode; cl
 
   const handleHoverStart = async () => {
     animateEl(x, [0, 1.5, 0], { duration: 0.35, ease: "easeOut" });
-    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.30), 0 0 18px rgba(255,255,255,0.06)", { duration: 0.15 });
-    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0px rgba(255,255,255,0)", { duration: 0.85 });
+    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.9), 0 0 0 2px rgba(13,13,13,1), 0 0 0 3px rgba(255,255,255,0.45), 0 0 0 4px rgba(13,13,13,1), 0 0 0 5px rgba(255,255,255,0.15)", { duration: 0.08 });
+    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0 2px rgba(13,13,13,0), 0 0 0 3px rgba(255,255,255,0), 0 0 0 4px rgba(13,13,13,0), 0 0 0 5px rgba(255,255,255,0)", { duration: 0.9 });
   };
 
   return (
@@ -104,6 +104,96 @@ function Tag({ label }: { label: string }) {
   );
 }
 
+// ─── BG DECORATIONS ──────────────────────────────────────────
+function MatrixBg() {
+  const grid = [
+    { x: 6, y: 14, c: "0", d: 0   }, { x: 28, y: 14, c: "1", d: 0.6 }, { x: 50, y: 14, c: "0", d: 1.3 },
+    { x: 6, y: 34, c: "1", d: 0.4 }, { x: 28, y: 34, c: "0", d: 1.0 }, { x: 50, y: 34, c: "1", d: 1.8 },
+    { x: 6, y: 54, c: "0", d: 0.8 }, { x: 28, y: 54, c: "1", d: 1.4 }, { x: 50, y: 54, c: "0", d: 2.2 },
+    { x: 6, y: 74, c: "1", d: 1.2 }, { x: 28, y: 74, c: "0", d: 1.8 }, { x: 50, y: 74, c: "1", d: 2.6 },
+    { x: 6, y: 94, c: "0", d: 1.6 }, { x: 28, y: 94, c: "1", d: 2.2 }, { x: 50, y: 94, c: "0", d: 3.0 },
+  ];
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
+      <svg style={{ position: "absolute", right: 0, top: 0, opacity: 0.08 }} width="66" height="108">
+        {grid.map(({ x, y, c, d }, i) => (
+          <motion.text key={i} x={x} y={y} fill="#4ade80" fontSize={11} fontFamily="monospace"
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 2.2, delay: d, repeat: Infinity, repeatDelay: 2 }}
+          >{c}</motion.text>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function FilmBg() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0, opacity: 0.055 }}>
+      <svg style={{ position: "absolute", right: 0, top: 0 }} width="22" height="400">
+        <rect x={0} y={0} width={22} height={400} fill="white" />
+        {[...Array(14)].map((_, i) => (
+          <rect key={i} x={3} y={10 + i * 28} width={16} height={18} rx={2} fill="#0a0a0a" />
+        ))}
+      </svg>
+      <svg style={{ position: "absolute", left: 16, bottom: 16, opacity: 0.7 }} width="48" height="38">
+        <rect x={0} y={10} width={48} height={28} fill="white" />
+        <rect x={4} y={16} width={40} height={16} fill="#0a0a0a" />
+        <rect x={0} y={2} width={48} height={10} fill="white" />
+        {[0,1,2,3,4].map(i => (
+          <rect key={i} x={i * 10} y={2} width={5} height={10} fill={i % 2 === 0 ? "#0a0a0a" : "white"} />
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function CircuitBg() {
+  const nodes: [number, number, number][] = [[50,50,0],[90,50,0.5],[90,80,1.0],[130,30,1.5],[50,80,2.0]];
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
+      <svg style={{ position: "absolute", left: 0, bottom: 0, opacity: 0.08 }} width="180" height="120">
+        <path d="M 0 80 H 50 V 50 H 90 V 80 H 130 M 90 50 V 30 H 130" stroke="#2da44e" strokeWidth={1.5} fill="none" strokeLinecap="square" />
+        {nodes.map(([cx, cy, d], i) => (
+          <motion.circle key={i} cx={cx} cy={cy} r={2.5} fill="#2da44e"
+            animate={{ opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 2, delay: d, repeat: Infinity }}
+          />
+        ))}
+        <rect x={0} y={78} width={5} height={5} fill="#2da44e" />
+        <rect x={128} y={28} width={5} height={5} fill="#2da44e" />
+        <rect x={128} y={78} width={5} height={5} fill="#2da44e" />
+      </svg>
+    </div>
+  );
+}
+
+function SignalBg() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
+      <svg className="absolute -bottom-6 -right-6 opacity-[0.04]" width="160" height="160" viewBox="0 0 24 24"
+        fill="none" stroke="white" strokeWidth="0.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <rect width="20" height="16" x="2" y="4" rx="2" />
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+      </svg>
+      <svg style={{ position: "absolute", left: 12, bottom: 55, opacity: 0.1 }} width="70" height="70">
+        <rect x={32} y={8} width={2} height={22} fill="#e2e8f0" />
+        <rect x={26} y={8} width={14} height={2} fill="#e2e8f0" />
+        <rect x={30} y={2} width={2} height={8} fill="#e2e8f0" />
+        <rect x={24} y={28} width={18} height={2} fill="#e2e8f0" />
+        {[1, 2, 3].map(i => (
+          <motion.circle key={i} cx={33} cy={19} r={i * 12}
+            stroke="#DE3E4A" strokeWidth={1} fill="none"
+            initial={{ opacity: 0.8, scale: 0 }}
+            animate={{ opacity: 0, scale: 1 }}
+            transition={{ duration: 2.5, delay: i * 0.85, repeat: Infinity, ease: "easeOut" }}
+            style={{ transformOrigin: "33px 19px" }}
+          />
+        ))}
+      </svg>
+    </div>
+  );
+}
 
 // ═══════════════════════════════════════════════════════════════
 // SECTIONS
@@ -269,7 +359,9 @@ function HeroCard({ onKill }: { onKill?: () => void }) {
   const [gifKey, setGifKey] = useState(0);
   const [hoveredTag, setHoveredTag] = useState<string | null>(null);
   return (
-    <BentoCard className="col-span-12 flex flex-col md:col-span-4 md:row-span-3 md:h-full">
+    <BentoCard className="col-span-12 relative flex flex-col overflow-hidden md:col-span-4 md:row-span-3 md:h-full">
+      <MatrixBg />
+      <div className="relative z-[1] flex flex-col flex-1">
       <SectionLabel text="AI • CYBERSECURITY" />
 
       {/* Badge disponibilité */}
@@ -363,6 +455,7 @@ function HeroCard({ onKill }: { onKill?: () => void }) {
           ))}
         </div>
       </div>
+      </div>
     </BentoCard>
   );
 }
@@ -375,28 +468,19 @@ function ContactCard() {
   const handleHoverStart = async () => {
     setHovered(true);
     await borderControls.start({
-      boxShadow: "0 0 0 1.5px rgba(222,62,74,0.9), 0 0 24px rgba(222,62,74,0.28)",
-      transition: { duration: 0.12 },
+      boxShadow: "0 0 0 1px rgba(222,62,74,0.9), 0 0 0 2px rgba(13,13,13,1), 0 0 0 3px rgba(222,62,74,0.5), 0 0 0 4px rgba(13,13,13,1), 0 0 0 5px rgba(222,62,74,0.2)",
+      transition: { duration: 0.08 },
     });
     borderControls.start({
-      boxShadow: "0 0 0 1px rgba(222,62,74,0.25), 0 0 0px rgba(222,62,74,0)",
-      transition: { duration: 0.88 },
+      boxShadow: "0 0 0 1px rgba(222,62,74,0), 0 0 0 2px rgba(13,13,13,0), 0 0 0 3px rgba(222,62,74,0), 0 0 0 4px rgba(13,13,13,0), 0 0 0 5px rgba(222,62,74,0)",
+      transition: { duration: 0.9 },
     });
   };
 
   return (
     <BentoCard className="col-span-12 relative flex flex-col gap-4 overflow-hidden md:col-span-4">
-      {/* SVG de fond — enveloppe discrète, coin bas-droit */}
-      <svg
-        className="pointer-events-none absolute -bottom-6 -right-6 opacity-[0.04]"
-        width="160" height="160" viewBox="0 0 24 24" fill="none"
-        stroke="white" strokeWidth="0.6" strokeLinecap="round" strokeLinejoin="round"
-        aria-hidden
-      >
-        <rect width="20" height="16" x="2" y="4" rx="2" />
-        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-      </svg>
-
+      <SignalBg />
+      <div className="relative z-[1] flex flex-col gap-4">
       <SectionLabel text="Contact" />
       <div>
         <p className="text-xl font-semibold leading-snug text-white">
@@ -450,6 +534,7 @@ function ContactCard() {
           </AnimatePresence>
         </span>
       </motion.a>
+      </div>
     </BentoCard>
   );
 }
@@ -463,12 +548,12 @@ function FlashBorder({ children }: { children: React.ReactNode }) {
 
   const handleHoverStart = async () => {
     animateEl(x, [0, 1.5, 0], { duration: 0.35, ease: "easeOut" });
-    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.30), 0 0 18px rgba(255,255,255,0.06)", { duration: 0.15 });
-    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0px rgba(255,255,255,0)", { duration: 0.85 });
+    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.9), 0 0 0 2px rgba(13,13,13,1), 0 0 0 3px rgba(255,255,255,0.45), 0 0 0 4px rgba(13,13,13,1), 0 0 0 5px rgba(255,255,255,0.15)", { duration: 0.08 });
+    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0 2px rgba(13,13,13,0), 0 0 0 3px rgba(255,255,255,0), 0 0 0 4px rgba(13,13,13,0), 0 0 0 5px rgba(255,255,255,0)", { duration: 0.9 });
   };
 
   return (
-    <motion.div style={{ x, boxShadow }} className="bento-card rounded-2xl p-5 cursor-pointer" onHoverStart={handleHoverStart}>
+    <motion.div style={{ x, boxShadow }} className="relative bento-card rounded-2xl p-5 cursor-pointer overflow-hidden" onHoverStart={handleHoverStart}>
       {children}
     </motion.div>
   );
@@ -502,12 +587,12 @@ function YoutubeTeaserCard() {
 
   const handleSeeAllHover = async () => {
     await seeAllControls.start({
-      boxShadow: "0 0 0 1.5px rgba(222,62,74,0.9), 0 0 24px rgba(222,62,74,0.28)",
-      transition: { duration: 0.12 },
+      boxShadow: "0 0 0 1px rgba(222,62,74,0.9), 0 0 0 2px rgba(13,13,13,1), 0 0 0 3px rgba(222,62,74,0.4)",
+      transition: { duration: 0.08 },
     });
     seeAllControls.start({
-      boxShadow: "0 0 0 1px rgba(222,62,74,0.25), 0 0 0px rgba(222,62,74,0)",
-      transition: { duration: 0.88 },
+      boxShadow: "0 0 0 1px rgba(222,62,74,0), 0 0 0 2px rgba(13,13,13,0), 0 0 0 3px rgba(222,62,74,0)",
+      transition: { duration: 0.9 },
     });
   };
 
@@ -519,6 +604,8 @@ function YoutubeTeaserCard() {
     >
       <Link href="/clients" className="block">
         <FlashBorder>
+          <FilmBg />
+          <div className="relative z-[1]">
           <div className="flex items-center justify-between mb-5">
             <div>
               <SectionLabel text="YouTube Clients" />
@@ -572,6 +659,7 @@ function YoutubeTeaserCard() {
                 </div>
               );
             })}
+          </div>
           </div>
         </FlashBorder>
       </Link>
@@ -661,7 +749,9 @@ function GitHubCard() {
   };
 
   return (
-    <BentoCard className="col-span-12 flex flex-col gap-4 md:col-span-4">
+    <BentoCard className="col-span-12 relative flex flex-col gap-4 overflow-hidden md:col-span-4">
+      <CircuitBg />
+      <div className="relative z-[1] flex flex-col gap-4 flex-1">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -806,6 +896,7 @@ function GitHubCard() {
         </svg>
         github.com/quentiinct
       </a>
+      </div>
     </BentoCard>
   );
 }
@@ -942,8 +1033,8 @@ function WIPCard({ project }: { project: (typeof WIP_PROJECTS)[0] }) {
 
   const handleHoverStart = async () => {
     animateEl(x, [0, 1.5, 0], { duration: 0.35, ease: "easeOut" });
-    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.30), 0 0 18px rgba(255,255,255,0.06)", { duration: 0.15 });
-    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0px rgba(255,255,255,0)", { duration: 0.85 });
+    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.9), 0 0 0 2px rgba(13,13,13,1), 0 0 0 3px rgba(255,255,255,0.45), 0 0 0 4px rgba(13,13,13,1), 0 0 0 5px rgba(255,255,255,0.15)", { duration: 0.08 });
+    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0 2px rgba(13,13,13,0), 0 0 0 3px rgba(255,255,255,0), 0 0 0 4px rgba(13,13,13,0), 0 0 0 5px rgba(255,255,255,0)", { duration: 0.9 });
   };
 
   return (
@@ -1084,7 +1175,7 @@ export default function Home() {
   }, [killed, gridControls]);
 
   return (
-    <div className="min-h-screen px-4 py-10 md:px-8 lg:px-12 lg:py-16">
+    <div className="min-h-screen overflow-x-hidden px-4 py-10 md:px-8 lg:px-12 lg:py-16">
       {killed && <DustEffect />}
       {killed && (
         <motion.p
@@ -1098,7 +1189,7 @@ export default function Home() {
         </motion.p>
       )}
       <motion.div
-        className="mx-auto grid max-w-6xl grid-cols-12 gap-3"
+        className="flex overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scrollbar-hide *:min-w-[80vw] *:shrink-0 *:snap-start md:grid md:mx-auto md:max-w-6xl md:grid-cols-12 md:overflow-visible md:pb-0 md:*:min-w-0 md:*:shrink"
         variants={container}
         initial="hidden"
         animate={gridControls}
