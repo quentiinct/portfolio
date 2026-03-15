@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { CHANNELS, type Channel } from "../data";
+import SpaceBackground from "../components/SpaceBackground";
 
 const parseSubs = (s: string) => parseFloat(s) * (s.includes("M") ? 1_000_000 : s.includes("K") ? 1_000 : 1);
 
@@ -92,7 +93,7 @@ function ChannelCard({ channel }: { channel: Channel }) {
         <div className="rounded-xl bg-white/3 px-3 py-2">
           <p className="text-[10px] uppercase tracking-widest text-zinc-600">Today</p>
           <p className="mt-0.5 text-xl font-semibold text-white">{channel.subsCurrent}</p>
-          <p className="text-[10px] font-semibold" style={{ color: "#DE3E4A" }}>{channel.growth}</p>
+          <p className="text-[10px] font-semibold" style={{ color: "#ffffff" }}>{channel.growth}</p>
         </div>
       </div>
 
@@ -147,6 +148,8 @@ function ChannelCard({ channel }: { channel: Channel }) {
 
 export default function ClientsPage() {
   return (
+    <>
+    <SpaceBackground />
     <div className="min-h-screen px-4 py-8 md:px-8 lg:px-12 lg:py-10">
       <div className="mx-auto max-w-6xl">
 
@@ -174,7 +177,7 @@ export default function ClientsPage() {
         >
           <p className="mb-1 text-[10px] uppercase tracking-[0.2em] text-zinc-600">YouTube Clients</p>
           <h2 className="text-4xl font-semibold tracking-tight text-white">
-            YouTube Growth Editing<span style={{ color: "#DE3E4A" }}>.</span>
+            YouTube Growth Editing<span style={{ color: "#ffffff" }}>.</span>
           </h2>
           <p className="mt-2 max-w-md text-[15px] leading-relaxed text-zinc-400">
             Creators I work with — content, growth & creative direction.
@@ -207,7 +210,7 @@ export default function ClientsPage() {
           <a
             href="mailto:quentincourtade33@gmail.com"
             className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 hover:brightness-110"
-            style={{ borderColor: "rgba(222,62,74,0.3)", backgroundColor: "rgba(222,62,74,0.08)", color: "#DE3E4A" }}
+            style={{ borderColor: "rgba(255,255,255,0.18)", backgroundColor: "rgba(255,255,255,0.05)", color: "#ffffff" }}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect width="20" height="16" x="2" y="4" rx="2" />
@@ -218,5 +221,6 @@ export default function ClientsPage() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

@@ -1,10 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence, useAnimation, useMotionValue, useAnimationFrame, useTransform, animate as animateEl } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { CHANNELS } from "./data";
+import SpaceBackground from "./components/SpaceBackground";
 
 // ═══════════════════════════════════════════════════════════════
 // DONNÉES LOCALES
@@ -23,7 +23,7 @@ const WIP_PROJECTS = [
     ),
     description: "CTF, pentest & security projects — soon.",
     tags: ["CTF", "Pentest", "Kali Linux", "OSCP"],
-    colClass: "col-span-4",
+    colClass: "col-span-12 md:col-span-4",
   },
   {
     id: "ai",
@@ -43,7 +43,7 @@ const WIP_PROJECTS = [
     ),
     description: "Automation, LLMs & AI Projects — soon.",
     tags: ["Python", "LLMs", "Claude API", "Automation"],
-    colClass: "col-span-4",
+    colClass: "col-span-12 md:col-span-4",
   },
 ];
 
@@ -71,15 +71,15 @@ function BentoCard({ children, className = "" }: { children: React.ReactNode; cl
 
   const handleHoverStart = async () => {
     animateEl(x, [0, 1.5, 0], { duration: 0.35, ease: "easeOut" });
-    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.9), 0 0 0 2px rgba(13,13,13,1), 0 0 0 3px rgba(255,255,255,0.45), 0 0 0 4px rgba(13,13,13,1), 0 0 0 5px rgba(255,255,255,0.15)", { duration: 0.08 });
-    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0 2px rgba(13,13,13,0), 0 0 0 3px rgba(255,255,255,0), 0 0 0 4px rgba(13,13,13,0), 0 0 0 5px rgba(255,255,255,0)", { duration: 0.9 });
+    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.30), 0 0 18px rgba(255,255,255,0.06)", { duration: 0.15 });
+    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0px rgba(255,255,255,0)", { duration: 0.85 });
   };
 
   return (
     <motion.div
       variants={card}
       whileHover={{ scale: 1.015, transition: { duration: 0.2 } }}
-      className={`bento-card rounded-2xl p-5 ${className}`}
+      className={`bento-card rounded-2xl p-5 relative ${className}`}
       style={{ x, boxShadow }}
       onHoverStart={handleHoverStart}
     >
@@ -104,94 +104,328 @@ function Tag({ label }: { label: string }) {
   );
 }
 
-// ─── BG DECORATIONS ──────────────────────────────────────────
-function MatrixBg() {
-  const grid = [
-    { x: 6, y: 14, c: "0", d: 0   }, { x: 28, y: 14, c: "1", d: 0.6 }, { x: 50, y: 14, c: "0", d: 1.3 },
-    { x: 6, y: 34, c: "1", d: 0.4 }, { x: 28, y: 34, c: "0", d: 1.0 }, { x: 50, y: 34, c: "1", d: 1.8 },
-    { x: 6, y: 54, c: "0", d: 0.8 }, { x: 28, y: 54, c: "1", d: 1.4 }, { x: 50, y: 54, c: "0", d: 2.2 },
-    { x: 6, y: 74, c: "1", d: 1.2 }, { x: 28, y: 74, c: "0", d: 1.8 }, { x: 50, y: 74, c: "1", d: 2.6 },
-    { x: 6, y: 94, c: "0", d: 1.6 }, { x: 28, y: 94, c: "1", d: 2.2 }, { x: 50, y: 94, c: "0", d: 3.0 },
+
+// ═══════════════════════════════════════════════════════════════
+// PIXEL SCENES — 8-bit animated SVG backgrounds per card
+// ═══════════════════════════════════════════════════════════════
+
+function PineTree({ x, by, h = 55 }: { x: number; by: number; h?: number }) {
+  const y1 = by - h, y2 = by - h * 0.67, y3 = by - h * 0.34;
+  return (
+    <>
+      <polygon points={`${x},${y1} ${x - 6},${y1 + h * 0.34} ${x + 6},${y1 + h * 0.34}`} fill="#2a6a2a" />
+      <polygon points={`${x},${y2} ${x - 10},${y2 + h * 0.34} ${x + 10},${y2 + h * 0.34}`} fill="#1a4a1a" />
+      <polygon points={`${x},${y3} ${x - 14},${y3 + h * 0.34} ${x + 14},${y3 + h * 0.34}`} fill="#2a6a2a" />
+      <rect x={x - 3} y={by - 12} width={6} height={12} fill="#4a2800" />
+    </>
+  );
+}
+
+function HeroScene() {
+  const [frame, setFrame] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setFrame(f => (f + 1) % 24), 120);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <svg viewBox="0 0 360 240" width="100%" height="100%" style={{ imageRendering: "pixelated" }} shapeRendering="crispEdges" aria-hidden>
+      {/* Deep space background */}
+      <rect width="360" height="240" fill="#02020e" />
+      {/* Stars */}
+      {[[12,8,1],[45,15,1],[88,5,2],[130,20,1],[175,9,1],[220,14,2],[268,7,1],[305,18,1],[340,11,1],[25,30,1],[65,40,1],[112,28,1],[155,38,1],[200,25,1],[245,35,1],[290,22,1],[335,32,2],[8,50,1],[50,55,1],[95,48,1],[140,58,1],[185,45,1],[230,52,1],[275,42,1],[320,58,1],[350,48,1],[15,70,1],[75,65,1],[160,68,1],[235,62,1],[310,72,1]].map(([x,y,s],i) => (
+        <motion.rect key={i} x={x} y={y} width={s} height={s} fill={i%3===0?"#cce0ff":i%3===1?"#ffffff":"#aabbdd"}
+          animate={{ opacity: [0.2,0.9,0.2] }} transition={{ duration: 2.2+i*0.18, repeat: Infinity, delay: i*0.12 }} />
+      ))}
+      {/* Ceiling with lights */}
+      <rect x="0" y="0" width="360" height="16" fill="#07091a" />
+      <rect x="0" y="15" width="360" height="2" fill="#0e1228" />
+      {[50,130,220,310].map((x,i) => (
+        <g key={i}>
+          <rect x={x-8} y={12} width={16} height={4} fill="#0d1124" />
+          <rect x={x-5} y={13} width={10} height={2} fill={frame%8<4 ? "#ffffcc" : "#cccc88"} opacity={0.85} />
+          <rect x={x-10} y={16} width={20} height={8} fill={`rgba(255,255,160,${frame%8<4?0.04:0.02})`} />
+        </g>
+      ))}
+      {/* Left wall + porthole window */}
+      <rect x="0" y="16" width="14" height="194" fill="#060816" />
+      <rect x="13" y="16" width="2" height="194" fill="#0d1124" />
+      {/* Porthole frame */}
+      <rect x="16" y="22" width="72" height="72" fill="#07091e" />
+      <rect x="16" y="22" width="72" height="3" fill="#141832" />
+      <rect x="16" y="91" width="72" height="3" fill="#0c1020" />
+      <rect x="16" y="22" width="3" height="72" fill="#141832" />
+      <rect x="85" y="22" width="3" height="72" fill="#0c1020" />
+      <rect x="16" y="55" width="72" height="2" fill="#0f1328" />
+      <rect x="50" y="22" width="2" height="72" fill="#0f1328" />
+      {/* Planet in window */}
+      {[[36,30,20],[34,34,24],[32,38,24],[32,42,24],[34,46,22],[36,50,18],[39,54,12]].map(([x,w,_],row) => (
+        <rect key={row} x={x} y={30+row*4} width={w} height={4} fill={["#1a3870","#1e4080","#1a3870","#162e60","#122850","#0e2040","#0a1830"][row]} />
+      ))}
+      <rect x="22" y="44" width="44" height="2" fill="#2a4888" opacity={0.4} />
+      {[[20,26],[78,32],[22,72],[80,68],[24,42],[76,58]].map(([x,y],i) => (
+        <rect key={i} x={x} y={y} width={1} height={1} fill="#99bbdd" opacity={0.6} />
+      ))}
+      {/* Right wall */}
+      <rect x="346" y="16" width="14" height="194" fill="#060816" />
+      <rect x="345" y="16" width="2" height="194" fill="#0d1124" />
+      {/* Floor with perspective grid */}
+      <rect x="0" y="208" width="360" height="32" fill="#050810" />
+      {[210,216,222,228].map((y,i) => <rect key={i} x="0" y={y} width="360" height="1" fill="#0b0e1e" />)}
+      {[0,45,90,135,180,225,270,315,360].map((x,i) => (
+        <line key={i} x1={x} y1="240" x2={180+(x-180)*0.12} y2="208" stroke="#0b0e1e" strokeWidth="1" />
+      ))}
+      {/* Main large monitor - center */}
+      <rect x="96" y="20" width="210" height="130" fill="#0e1226" />
+      <rect x="100" y="24" width="202" height="122" fill="#020408" />
+      <rect x="96" y="20" width="210" height="4" fill="#181c34" />
+      <rect x="96" y="150" width="210" height="4" fill="#0a0c18" />
+      {/* Monitor content - code lines */}
+      {[0,1,2,3,4,5,6,7,8,9].map(row => {
+        const widths=[130,85,150,65,120,95,140,75,110,60];
+        const cols=["#00ff88","#44aaff","#00ff88","#aa88ff","#44aaff","#00ff88","#aa88ff","#44aaff","#00ff88","#44aaff"];
+        return <rect key={row} x={104} y={28+row*11} width={widths[row]} height={3} fill={cols[row]} opacity={frame%10===row?0.15:0.72} />;
+      })}
+      {/* Cursor */}
+      <rect x={104} y={138} width={5} height={3} fill="#00ff88" opacity={frame%6<3?1:0} />
+      {/* Scanline */}
+      <rect x="100" y={24+(frame*6)%122} width="202" height="2" fill="rgba(0,255,136,0.03)" />
+      {/* Screen glow */}
+      <rect x="96" y="20" width="210" height="134" fill="rgba(0,80,255,0.025)" />
+      {/* Mini chart - monitor right zone */}
+      <rect x="240" y="28" width="56" height="36" fill="#030608" />
+      {[14,22,10,28,18,32,16,24,20,8,30,12].map((h,i) => (
+        <rect key={i} x={242+i*4} y={64-h} width={3} height={h} fill="#44aaff" opacity={0.65} />
+      ))}
+      <rect x="240" y="64" width="56" height="1" fill="#1a2244" />
+      {/* Waveform mini - monitor top right */}
+      {Array.from({length:22},(_,i)=>{const hs=[4,8,12,6,3,10,15,9,5,2,7,13,11,6,4,9,14,8,3,6,10,5];return<rect key={i} x={242+i*2} y={30} width={1} height={hs[i%22]} fill="#aa88ff" opacity={0.7}/>;}) }
+      {/* Monitor stand */}
+      <rect x="193" y="154" width="24" height="10" fill="#0c0e1c" />
+      <rect x="180" y="163" width="50" height="4" fill="#0a0c18" />
+      {/* Side monitor - right */}
+      <rect x="264" y="110" width="78" height="58" fill="#0e1226" />
+      <rect x="267" y="113" width="72" height="52" fill="#020408" />
+      {[0,1,2,3].map(r => (
+        <rect key={r} x={270} y={116+r*12} width={[58,38,65,42][r]} height={3} fill={["#ffcc44","#44aaff","#ffcc44","#aa88ff"][r]} opacity={0.7} />
+      ))}
+      <motion.rect x={270+(frame*5)%62} y={155} width={3} height={3} fill="#44aaff"
+        animate={{opacity:[0.4,1,0.4]}} transition={{duration:0.6,repeat:Infinity}} />
+      {/* Side monitor - right small */}
+      <rect x="282" y="46" width="58" height="50" fill="#0e1226" />
+      <rect x="285" y="49" width="52" height="44" fill="#020408" />
+      {Array.from({length:26},(_,i)=>{const hs=[3,7,11,8,4,2,6,13,10,5,1,4,9,14,8,3,6,12,9,4,2,5,10,7,3,1];return<rect key={i} x={287+i*2} y={85-hs[i%26]} width={1} height={hs[i%26]} fill="#aa88ff" opacity={0.75}/>;}) }
+      {/* Desk / control surface */}
+      <rect x="56" y="168" width="288" height="16" fill="#0a0c1e" />
+      <rect x="56" y="166" width="288" height="4" fill="#10142a" />
+      <rect x="58" y="170" width="284" height="1" fill="#161a30" />
+      {/* Left control panel - buttons grid */}
+      <rect x="62" y="148" width="78" height="18" fill="#080a1c" />
+      {Array.from({length:16},(_,i)=>{
+        const bx=65+(i%8)*8, by=150+Math.floor(i/8)*7;
+        const litCols=["#44aaff","#44aaff","#aa44ff","#44ff88","#44aaff","#ff6644","#44aaff","#44aaff","rgba(255,255,255,0.08)","rgba(255,255,255,0.08)","rgba(255,255,255,0.08)","rgba(255,255,255,0.08)","rgba(255,255,255,0.08)","rgba(255,255,255,0.08)","rgba(255,255,255,0.08)","rgba(255,255,255,0.08)"];
+        return <rect key={i} x={bx} y={by} width={5} height={4} fill={i===frame%16?litCols[0]:litCols[i]} opacity={i===frame%16?1:0.75} />;
+      })}
+      {/* Right control panel - vertical sliders */}
+      <rect x="218" y="148" width="116" height="18" fill="#080a1c" />
+      {[222,232,242,252,262,272,282,292,302,312,322].map((sx,i)=>(
+        <g key={i}>
+          <rect x={sx} y={150} width={6} height={14} fill="#060810" />
+          <rect x={sx+1} y={150+((frame+i*3)%10)} width={4} height={4} fill={["#44aaff","#aa88ff","#44ff88","#ffcc44","#ff6644","#44aaff","#aa88ff","#44ff88","#ffcc44","#44aaff","#aa88ff"][i]} opacity={0.9} />
+        </g>
+      ))}
+      {/* Status bar LEDs */}
+      {[[68,165,"#44ff88"],[82,165,"#44aaff"],[96,165,"#ffcc44"],[110,165,"#ff4444"]].map(([x,y,c],i)=>(
+        <motion.rect key={i} x={x as number} y={y as number} width={8} height={2} fill={c as string}
+          animate={{opacity:i===3?[1,0.1,1]:[1,0.5,1]}} transition={{duration:1.2+i*0.4,repeat:Infinity,delay:i*0.3}} />
+      ))}
+      {/* Character at desk */}
+      <rect x="162" y="146" width="10" height="10" fill="#cc9966" />
+      <rect x="162" y="143" width="10" height="4" fill="#221100" />
+      <rect x="160" y="146" width="3" height="6" fill="#221100" />
+      <rect x="158" y="156" width="16" height="12" fill="#1a2a4a" />
+      <rect x="148" y="162" width="10" height="5" fill="#1a2a4a" />
+      <rect x="186" y="162" width="10" height="5" fill="#1a2a4a" />
+      <rect x="148" y="166" width={6} height={3} fill="#cc9966" />
+      <rect x="190" y="166" width={6} height={3} fill="#cc9966" />
+      {/* Headset */}
+      <rect x="160" y="143" width="12" height="2" fill="#2a2a4a" />
+      <rect x="158" y="147" width="3" height="4" fill="#2a2a4a" />
+      <rect x="171" y="147" width="3" height="4" fill="#2a2a4a" />
+      <rect x="156" y="149" width="4" height="3" fill="#383858" />
+      {/* Keyboard */}
+      <rect x="147" y="174" width="48" height="7" fill="#0c0e1c" />
+      {Array.from({length:10},(_,i)=>(
+        <rect key={i} x={149+i*4} y={175} width={3} height={2} fill="#14182e" />
+      ))}
+      {Array.from({length:10},(_,i)=>(
+        <rect key={i} x={149+i*4} y={178} width={3} height={2} fill="#14182e" />
+      ))}
+      {/* Mug */}
+      <rect x="204" y="170" width="8" height="10" fill="#181826" />
+      <rect x="203" y="169" width="10" height="2" fill="#222238" />
+      <rect x="212" y="171" width="3" height="6" fill="#181826" />
+      <motion.rect x={207} y={166} width={1} height={3} fill="#aaaacc"
+        animate={{opacity:[0,0.45,0],y:[166,160,154]}} transition={{duration:2.2,repeat:Infinity}} />
+      <motion.rect x={210} y={166} width={1} height={3} fill="#aaaacc"
+        animate={{opacity:[0,0.35,0],y:[166,162,158]}} transition={{duration:2.2,repeat:Infinity,delay:0.9}} />
+      {/* Alert indicators - top right */}
+      <motion.rect x={336} y={22} width={6} height={4} fill="#ff4444"
+        animate={{opacity:[1,0.1,1]}} transition={{duration:0.85,repeat:Infinity}} />
+      <motion.rect x={326} y={22} width={6} height={4} fill="#ffcc44"
+        animate={{opacity:[0.1,1,0.1]}} transition={{duration:1.25,repeat:Infinity,delay:0.4}} />
+      <motion.rect x={316} y={22} width={6} height={4} fill="#44ff88"
+        animate={{opacity:[1,0.2,1]}} transition={{duration:1.65,repeat:Infinity,delay:0.9}} />
+      {/* Satellite dish - left side */}
+      <rect x="16" y="108" width="2" height="32" fill="#141832" />
+      <rect x="12" y="106" width="10" height="2" fill="#141832" />
+      <rect x="8" y="104" width="18" height="4" fill="#1c2040" />
+      <rect x="12" y="100" width="10" height="4" fill="#1c2040" />
+      <motion.rect x={10} y={103} width={5} height={2} fill="#44aaff"
+        animate={{opacity:[0.3,1,0.3]}} transition={{duration:1.8,repeat:Infinity}} />
+      {/* Global scan line */}
+      <rect x="0" y={16+((frame*9)%192)} width="360" height="1" fill="rgba(80,120,255,0.02)" />
+    </svg>
+  );
+}
+
+function StageScene() {
+  return (
+    <svg viewBox="0 0 360 240" width="100%" height="100%" style={{ imageRendering: "pixelated" }} shapeRendering="crispEdges" aria-hidden>
+      <rect width="360" height="240" fill="#100500" />
+      {/* Film strip */}
+      <rect x="0" y="0" width="360" height="16" fill="#111" />
+      {Array.from({ length: 19 }, (_, i) => (
+        <rect key={i} x={i * 19 + 3} y={2} width={11} height={12} fill={i % 2 === 0 ? "#000" : "#c8b890"} rx="1" />
+      ))}
+      {/* Spotlights */}
+      {[80, 180, 280].map((cx, si) =>
+        Array.from({ length: 20 }, (_, row) => (
+          <rect key={`${si}-${row}`} x={cx - row * 2.5} y={16 + row * 8} width={row * 5} height={8}
+            fill={`rgba(255,175,50,${(0.10 - row * 0.004).toFixed(3)})`} />
+        ))
+      )}
+      {/* Curtains */}
+      <rect x="0" y="16" width="48" height="165" fill="#7a0000" />
+      {[12, 24, 36].map(x => <rect key={x} x={x} y="16" width="3" height="165" fill="#5a0000" />)}
+      <rect x="312" y="16" width="48" height="165" fill="#7a0000" />
+      {[322, 334, 346].map(x => <rect key={x} x={x} y="16" width="3" height="165" fill="#5a0000" />)}
+      {/* Floor */}
+      <rect x="0" y="185" width="360" height="55" fill="#180800" />
+      {[192, 202, 215].map((y, i) => <rect key={i} x="0" y={y} width="360" height="2" fill="#251200" />)}
+      <rect x="60" y="178" width="240" height="12" fill="#201000" />
+      {/* Camera */}
+      <rect x="158" y="133" width="40" height="24" fill="#252525" />
+      <rect x="168" y="138" width="20" height="14" fill="#0d0d0d" rx="1" />
+      <rect x="173" y="141" width="10" height="8" fill="#1a1a2a" rx="1" />
+      <rect x="175" y="157" width="6" height="28" fill="#1a1a1a" />
+      <motion.rect x="192" y="135" width="4" height="4" fill="#ff2200"
+        animate={{ opacity: [1, 0, 1] }} transition={{ duration: 0.9, repeat: Infinity }} />
+      {/* Audience */}
+      {[18, 48, 80, 112, 145, 215, 248, 280, 312, 342].map((x, i) => (
+        <g key={i}>
+          <ellipse cx={x + 7} cy={222} rx={7} ry={5} fill="#0a0300" />
+          <rect x={x + 2} y={227} width={10} height={10} fill="#0a0300" />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function ForestScene() {
+  const fireflies: [number, number, number][] = [[105,130,0],[165,112,0.6],[228,145,1.2],[272,125,0.3],[142,155,0.9],[308,138,1.5]];
+  return (
+    <svg viewBox="0 0 360 240" width="100%" height="100%" style={{ imageRendering: "pixelated" }} shapeRendering="crispEdges" aria-hidden>
+      <rect width="360" height="240" fill="#050f05" />
+      {/* Stars */}
+      {[[30,10],[70,22],[120,8],[170,16],[220,5],[265,20],[300,12],[340,25],[50,30],[315,35]].map(([x,y],i) => (
+        <motion.rect key={i} x={x} y={y} width={2} height={2} fill="#aaccaa"
+          animate={{ opacity: [0.1, 0.9, 0.1] }} transition={{ duration: 2.5 + i * 0.3, repeat: Infinity, delay: i * 0.25 }} />
+      ))}
+      {/* Moon */}
+      {[[328,6,12],[324,4,20],[322,3,24],[322,6,24],[324,12,20],[326,18,16],[328,22,10]].map(([x,y,w],i) => (
+        <rect key={i} x={x} y={y} width={w} height={3} fill="#d4e8cc" />
+      ))}
+      {/* Trees */}
+      <PineTree x={18} by={200} h={62} />
+      <PineTree x={58} by={196} h={72} />
+      <PineTree x={95} by={198} h={56} />
+      <PineTree x={205} by={197} h={68} />
+      <PineTree x={272} by={200} h={60} />
+      <PineTree x={322} by={194} h={76} />
+      {/* Ground */}
+      <rect x="0" y="200" width="360" height="40" fill="#0a180a" />
+      {Array.from({ length: 30 }, (_, i) => (
+        <rect key={i} x={i * 12 + 2} y={197} width={3} height={5} fill={i % 2 === 0 ? "#1a4a1a" : "#2a6a2a"} />
+      ))}
+      {/* Fireflies */}
+      {fireflies.map(([x, y, delay], i) => (
+        <motion.rect key={i} x={x} y={y} width={2} height={2} fill="#aaff44"
+          animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.8, repeat: Infinity, delay }} />
+      ))}
+      {/* Owl */}
+      <rect x="96" y="128" width="30" height="3" fill="#4a2800" />
+      <rect x="100" y="114" width="14" height="14" fill="#665533" />
+      <rect x="99" y="106" width="16" height="10" fill="#886644" />
+      <rect x="101" y="104" width="12" height="4" fill="#886644" />
+      <rect x="101" y="108" width="4" height="4" fill="#ffcc00" />
+      <rect x="108" y="108" width="4" height="4" fill="#ffcc00" />
+      <rect x="103" y="109" width="2" height="2" fill="#111" />
+      <rect x="110" y="109" width="2" height="2" fill="#111" />
+      <rect x="105" y="113" width="4" height="2" fill="#cc8800" />
+    </svg>
+  );
+}
+
+function CityScene() {
+  const buildings: [number, number, number, number, string][] = [
+    [0,155,50,85,"#120820"],[48,122,42,118,"#1a0a2e"],[88,138,36,102,"#120820"],
+    [122,98,58,142,"#1a0a2e"],[178,128,48,112,"#120820"],[224,108,42,132,"#1a0a2e"],
+    [264,142,52,98,"#120820"],[314,122,46,118,"#1a0a2e"],
+  ];
+  const windows: [number, number, string, boolean][] = [
+    [8,168,"#ffaa44",false],[18,168,"#44ccff",false],[8,182,"#ffaa44",true],
+    [55,132,"#ffaa44",false],[66,148,"#44ccff",true],[55,164,"#ffaa44",false],
+    [92,152,"#44ccff",false],[128,112,"#ffaa44",true],[142,130,"#44ccff",false],
+    [130,150,"#ffaa44",false],[165,145,"#ffaa44",true],[196,158,"#44ccff",false],
+    [228,122,"#ffaa44",false],[232,145,"#44ccff",true],[268,156,"#ffaa44",false],
+    [275,172,"#44ccff",false],[318,136,"#ffaa44",true],[328,155,"#44ccff",false],
   ];
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
-      <svg style={{ position: "absolute", right: 0, top: 0, opacity: 0.08 }} width="66" height="108">
-        {grid.map(({ x, y, c, d }, i) => (
-          <motion.text key={i} x={x} y={y} fill="#4ade80" fontSize={11} fontFamily="monospace"
-            animate={{ opacity: [0, 1, 0] }}
-            transition={{ duration: 2.2, delay: d, repeat: Infinity, repeatDelay: 2 }}
-          >{c}</motion.text>
-        ))}
-      </svg>
-    </div>
-  );
-}
-
-function FilmBg() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0, opacity: 0.055 }}>
-      <svg style={{ position: "absolute", right: 0, top: 0 }} width="22" height="400">
-        <rect x={0} y={0} width={22} height={400} fill="white" />
-        {[...Array(14)].map((_, i) => (
-          <rect key={i} x={3} y={10 + i * 28} width={16} height={18} rx={2} fill="#0a0a0a" />
-        ))}
-      </svg>
-      <svg style={{ position: "absolute", left: 16, bottom: 16, opacity: 0.7 }} width="48" height="38">
-        <rect x={0} y={10} width={48} height={28} fill="white" />
-        <rect x={4} y={16} width={40} height={16} fill="#0a0a0a" />
-        <rect x={0} y={2} width={48} height={10} fill="white" />
-        {[0,1,2,3,4].map(i => (
-          <rect key={i} x={i * 10} y={2} width={5} height={10} fill={i % 2 === 0 ? "#0a0a0a" : "white"} />
-        ))}
-      </svg>
-    </div>
-  );
-}
-
-function CircuitBg() {
-  const nodes: [number, number, number][] = [[50,50,0],[90,50,0.5],[90,80,1.0],[130,30,1.5],[50,80,2.0]];
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
-      <svg style={{ position: "absolute", left: 0, bottom: 0, opacity: 0.08 }} width="180" height="120">
-        <path d="M 0 80 H 50 V 50 H 90 V 80 H 130 M 90 50 V 30 H 130" stroke="#2da44e" strokeWidth={1.5} fill="none" strokeLinecap="square" />
-        {nodes.map(([cx, cy, d], i) => (
-          <motion.circle key={i} cx={cx} cy={cy} r={2.5} fill="#2da44e"
-            animate={{ opacity: [0.3, 1, 0.3] }}
-            transition={{ duration: 2, delay: d, repeat: Infinity }}
-          />
-        ))}
-        <rect x={0} y={78} width={5} height={5} fill="#2da44e" />
-        <rect x={128} y={28} width={5} height={5} fill="#2da44e" />
-        <rect x={128} y={78} width={5} height={5} fill="#2da44e" />
-      </svg>
-    </div>
-  );
-}
-
-function SignalBg() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
-      <svg className="absolute -bottom-6 -right-6 opacity-[0.04]" width="160" height="160" viewBox="0 0 24 24"
-        fill="none" stroke="white" strokeWidth="0.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <rect width="20" height="16" x="2" y="4" rx="2" />
-        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-      </svg>
-      <svg style={{ position: "absolute", left: 12, bottom: 55, opacity: 0.1 }} width="70" height="70">
-        <rect x={32} y={8} width={2} height={22} fill="#e2e8f0" />
-        <rect x={26} y={8} width={14} height={2} fill="#e2e8f0" />
-        <rect x={30} y={2} width={2} height={8} fill="#e2e8f0" />
-        <rect x={24} y={28} width={18} height={2} fill="#e2e8f0" />
-        {[1, 2, 3].map(i => (
-          <motion.circle key={i} cx={33} cy={19} r={i * 12}
-            stroke="#DE3E4A" strokeWidth={1} fill="none"
-            initial={{ opacity: 0.8, scale: 0 }}
-            animate={{ opacity: 0, scale: 1 }}
-            transition={{ duration: 2.5, delay: i * 0.85, repeat: Infinity, ease: "easeOut" }}
-            style={{ transformOrigin: "33px 19px" }}
-          />
-        ))}
-      </svg>
-    </div>
+    <svg viewBox="0 0 360 240" width="100%" height="100%" style={{ imageRendering: "pixelated" }} shapeRendering="crispEdges" aria-hidden>
+      <rect width="360" height="240" fill="#07020e" />
+      {/* Stars */}
+      {[[40,12],[90,8],[150,18],[200,5],[240,15],[285,22],[320,9],[350,18],[60,30],[130,28],[220,32],[305,26]].map(([x,y],i) => (
+        <motion.rect key={i} x={x} y={y} width={2} height={2} fill="#ccbbee"
+          animate={{ opacity: [0.15, 0.9, 0.15] }} transition={{ duration: 2 + i * 0.3, repeat: Infinity, delay: i * 0.2 }} />
+      ))}
+      {/* Moon */}
+      {[[8,8,12],[4,6,20],[2,5,24],[2,8,24],[4,14,20],[6,20,16],[8,24,10]].map(([x,y,w],i) => (
+        <rect key={i} x={x} y={y} width={w} height={3} fill="#d4c8e8" />
+      ))}
+      {/* Buildings */}
+      {buildings.map(([x,y,w,h,col],i) => (
+        <rect key={i} x={x} y={y} width={w} height={h} fill={col} />
+      ))}
+      {/* Windows */}
+      {windows.map(([x,y,col,anim],i) => anim ? (
+        <motion.rect key={i} x={x} y={y} width={3} height={4} fill={col}
+          animate={{ opacity: [1, 0.15, 1] }} transition={{ duration: 2.5 + i * 0.35, repeat: Infinity, delay: i * 0.4 }} />
+      ) : (
+        <rect key={i} x={x} y={y} width={3} height={4} fill={col} />
+      ))}
+      {/* Antenna */}
+      <rect x="177" y="38" width="6" height="153" fill="#1e0e30" />
+      {[52,72,92,112].map((y,i) => (
+        <rect key={i} x={177 - 8 - i * 2} y={y} width={22 + i * 4} height={2} fill="#1e0e30" />
+      ))}
+      <motion.rect x="179" y="34" width="4" height="4" fill="#ff2200"
+        animate={{ opacity: [1, 0, 1] }} transition={{ duration: 1, repeat: Infinity }} />
+      {[0, 0.5, 1.0].map((delay, i) => (
+        <motion.circle key={i} cx={180} cy={36} r={8} fill="none" stroke="#cc44ff" strokeWidth={1.5}
+          animate={{ r: [4, 36], opacity: [0.9, 0] }}
+          transition={{ duration: 2, repeat: Infinity, delay, ease: "easeOut" }} />
+      ))}
+    </svg>
   );
 }
 
@@ -300,7 +534,7 @@ function TerminalWidget({ onKill }: { onKill?: () => void }) {
             onMouseEnter={() => setActiveLine(i)}
             onMouseLeave={() => setActiveLine(null)}
           >
-            <span style={{ color: activeLine === i ? "#DE3E4A" : "#52525b" }}>{line.prompt}</span>
+            <span style={{ color: activeLine === i ? "#ffffff" : "#52525b" }}>{line.prompt}</span>
             <span
               className="text-zinc-300"
               style={
@@ -318,8 +552,8 @@ function TerminalWidget({ onKill }: { onKill?: () => void }) {
               <span
                 className="ml-auto rounded px-1.5 py-0.5 text-[9px] font-semibold"
                 style={{
-                  backgroundColor: line.tag === "WIP" ? "rgba(222,62,74,0.12)" : "rgba(74,222,128,0.12)",
-                  color:           line.tag === "WIP" ? "#DE3E4A"              : "#4ade80",
+                  backgroundColor: line.tag === "WIP" ? "rgba(255,255,255,0.08)" : "rgba(74,222,128,0.12)",
+                  color:           line.tag === "WIP" ? "#ffffff"              : "#4ade80",
                 }}
               >
                 {line.tag}
@@ -330,8 +564,8 @@ function TerminalWidget({ onKill }: { onKill?: () => void }) {
 
         {killLine && (
           <div className="mt-1 flex items-center gap-2 py-[3px]">
-            <span style={{ color: "#DE3E4A" }}>!</span>
-            <span className="text-xs font-semibold tracking-widest" style={{ color: "#DE3E4A" }}>SYSTEM TERMINATED</span>
+            <span style={{ color: "#ffffff" }}>!</span>
+            <span className="text-xs font-semibold tracking-widest" style={{ color: "#ffffff" }}>SYSTEM TERMINATED</span>
           </div>
         )}
 
@@ -339,7 +573,7 @@ function TerminalWidget({ onKill }: { onKill?: () => void }) {
           className="mt-2 flex items-center gap-2"
           style={{ opacity: typingDone && !killLine ? 1 : 0, transition: "opacity 0.4s ease" }}
         >
-          <span style={{ color: "#DE3E4A" }}>$</span>
+          <span style={{ color: "#ffffff" }}>$</span>
           <span className="text-zinc-300">{currentInput}</span>
           <span
             className={focused ? "animate-pulse text-zinc-400" : "text-zinc-700"}
@@ -350,111 +584,113 @@ function TerminalWidget({ onKill }: { onKill?: () => void }) {
   );
 }
 
+// ─── STAT BAR ─────────────────────────────────────────────────
 // ─── HERO ─────────────────────────────────────────────────────
-// Memoji : idle.png affiché par défaut, wink.gif swappé au hover.
-// Le changement de `gifKey` force React à re-monter le <img>,
-// ce qui redémarre le GIF depuis le début à chaque entrée de souris.
 function HeroCard({ onKill }: { onKill?: () => void }) {
-  const [hovered, setHovered] = useState(false);
-  const [gifKey, setGifKey] = useState(0);
-  const [hoveredTag, setHoveredTag] = useState<string | null>(null);
+  const [cmdInput, setCmdInput] = useState("");
+  const [cmdFocused, setCmdFocused] = useState(false);
+  const [killLine, setKillLine] = useState(false);
+  const cmdRef = useRef<HTMLDivElement>(null);
+
+  const handleCmdKey = (e: React.KeyboardEvent) => {
+    if (e.key === "Backspace") { setCmdInput(v => v.slice(0, -1)); return; }
+    if (e.key === "Enter") {
+      if (cmdInput === "/kill") { setKillLine(true); setTimeout(() => onKill?.(), 800); }
+      setCmdInput("");
+      return;
+    }
+    if (e.key.length === 1) setCmdInput(v => v + e.key);
+  };
+
+  const MISSIONS = [
+    { name: "portfolio-v1",  status: "DEPLOYED", live: true  },
+    { name: "image-search",  status: "WIP",       live: false },
+  ];
+
   return (
-    <BentoCard className="col-span-4 row-span-3 h-full relative flex flex-col overflow-hidden">
-      <MatrixBg />
-      <div className="relative z-[1] flex flex-col flex-1">
-      <SectionLabel text="AI • CYBERSECURITY" />
-
-      {/* Badge disponibilité */}
-      <div className="mt-2 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1" style={{ backgroundColor: "rgba(255,255,255,0.06)" }}>
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
-        </span>
-        <span className="text-xs text-zinc-300">Available to work</span>
+    <BentoCard className="col-span-12 flex flex-col md:col-span-4 md:row-span-3 md:h-full">
+      <div className="pointer-events-none absolute inset-0" style={{ zIndex: 0 }}>
+        <HeroScene />
       </div>
+      <div className="pointer-events-none absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(to top, rgba(2,2,14,0.97) 40%, rgba(2,2,14,0.55) 70%, transparent 100%)" }} />
 
-      {/* Nom + memoji en accompagnement */}
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <h1 className="text-5xl font-semibold tracking-tight text-white">
-          Quentin<span style={{ color: "#DE3E4A" }}>.</span>
-        </h1>
-        {/* Deux images superposées en position relative/absolute.
-            On crossfade l'opacité plutôt que de swapper le src —
-            aucun remount, aucun flash quelle que soit la frame du GIF. */}
-        <div
-          className="relative w-27 cursor-pointer select-none rounded-2xl"
-          style={{
-            transform: hovered ? "translateY(-4px) scale(1.05)" : "translateY(0px) scale(1)",
-            transition: "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.12)",
-          }}
-          onMouseEnter={() => { setHovered(true); setGifKey((k) => k + 1); }}
-          onMouseLeave={() => setHovered(false)}
-        >
-          {/* idle — optimisé via Next.js Image */}
-          <Image
-            src="/memoji/frame-01.png"
-            alt="Memoji Quentin"
-            width={108}
-            height={108}
-            priority
-            className="w-full rounded-2xl"
-            style={{ opacity: hovered ? 0 : 1, transition: "opacity 0.15s ease" }}
-            draggable={false}
-          />
-          {/* GIF — <img> conservé : Next.js Image ne supporte pas les GIFs animés */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            key={gifKey}
-            src="/memoji/memogif.gif"
-            alt=""
-            aria-hidden
-            loading="lazy"
-            className="absolute inset-0 w-full rounded-2xl"
-            style={{ opacity: hovered ? 1 : 0, transition: "opacity 0.15s ease" }}
-            draggable={false}
-          />
-        </div>
-      </div>
+      <div className="relative flex flex-col flex-1" style={{ zIndex: 2 }}>
 
-      {/* Localisation */}
-      <div className="mt-2 flex items-center gap-1.5 text-[11px] text-zinc-600">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
-        Bordeaux · Remote
-      </div>
-
-      {/* Description + terminal + tags */}
-      <div className="mt-5 flex flex-1 flex-col justify-between">
-        <div>
-          <p className="mb-6 text-[15px] leading-relaxed text-zinc-400">
-            I build AI tools and secure systems for real-world use.
-            <br />
-            Useful. Reliable. Built clean.
-          </p>
-          <TerminalWidget onKill={onKill} />
-        </div>
-        <div className="mt-5 flex gap-1.5">
-          {["Video Editing", "Development", "CyberSecurity", "AI"].map((tag) => (
-            <span
-              key={tag}
-              className={`whitespace-nowrap rounded-full py-1 text-center text-[11px] cursor-default ${tag === "AI" ? "px-3" : "flex-1"}`}
-              style={{
-                backgroundColor: hoveredTag === tag ? "rgba(222,62,74,0.1)" : "rgba(255,255,255,0.05)",
-                color: hoveredTag === tag ? "#DE3E4A" : "#a1a1aa",
-                transition: "background-color 0.15s ease, color 0.15s ease",
-              }}
-              onMouseEnter={() => setHoveredTag(tag)}
-              onMouseLeave={() => setHoveredTag(null)}
-            >
-              {tag}
+        {/* ── Header */}
+        <div className="flex items-center justify-between">
+          <SectionLabel text="AI · CYBERSECURITY" />
+          <div className="mb-3 flex items-center gap-1.5">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-400" />
             </span>
+            <span className="font-mono text-[9px] uppercase tracking-widest text-green-400">Available</span>
+          </div>
+        </div>
+
+        {/* ── Identity */}
+        <div className="mt-1">
+          <p className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-700">PL.01 · PLAYER</p>
+          <h1 className="font-mono text-[32px] font-black uppercase leading-none tracking-tight text-white">
+            Quentin<span className="text-white/20">_</span>
+          </h1>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-zinc-500">Full·Stack · AI · Sec</p>
+          <div className="mt-2 flex items-center gap-1 font-mono text-[10px] text-zinc-600">
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            Bordeaux · Remote
+          </div>
+        </div>
+
+        {/* ── Description */}
+        <p className="mt-4 text-sm leading-relaxed text-zinc-400">
+          I build AI tools and secure systems for real-world use.<br />
+          <span className="text-zinc-500">Useful. Reliable. Built clean.</span>
+        </p>
+
+        {/* ── Divider */}
+        <div className="my-3 flex items-center gap-2">
+          <span className="font-mono text-[8px] uppercase tracking-widest text-zinc-700">Active Missions</span>
+          <div className="h-px flex-1" style={{ backgroundColor: "rgba(255,255,255,0.06)" }} />
+        </div>
+
+        {/* ── Missions */}
+        <div className="flex flex-col gap-2">
+          {MISSIONS.map(m => (
+            <div key={m.name} className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-mono text-[11px]">
+                <span style={{ color: "rgba(255,255,255,0.20)" }}>▸</span>
+                <span className="text-zinc-400">{m.name}</span>
+              </div>
+              <span className="font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5" style={{
+                backgroundColor: m.live ? "rgba(74,222,128,0.10)" : "rgba(255,255,255,0.05)",
+                color: m.live ? "#4ade80" : "#52525b",
+                border: `1px solid ${m.live ? "rgba(74,222,128,0.20)" : "rgba(255,255,255,0.06)"}`,
+              }}>{m.status}</span>
+            </div>
           ))}
         </div>
-      </div>
+
+        {/* ── Hidden /kill easter egg at bottom */}
+        <div className="mt-auto border-t pt-3" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+          {killLine && (
+            <p className="mb-1 font-mono text-[10px] uppercase tracking-widest text-white">! system terminated</p>
+          )}
+          <div
+            ref={cmdRef} tabIndex={0}
+            className="flex cursor-text items-center gap-1.5 font-mono text-[10px] outline-none"
+            onClick={() => cmdRef.current?.focus()}
+            onKeyDown={handleCmdKey}
+            onFocus={() => setCmdFocused(true)}
+            onBlur={() => setCmdFocused(false)}
+          >
+            <span className="text-zinc-700">›</span>
+            <span className="text-zinc-500">{cmdInput}</span>
+            <span className={cmdFocused ? "animate-pulse text-zinc-500" : "opacity-0"}>▍</span>
+          </div>
+        </div>
+
       </div>
     </BentoCard>
   );
@@ -468,23 +704,37 @@ function ContactCard() {
   const handleHoverStart = async () => {
     setHovered(true);
     await borderControls.start({
-      boxShadow: "0 0 0 1px rgba(222,62,74,0.9), 0 0 0 2px rgba(13,13,13,1), 0 0 0 3px rgba(222,62,74,0.5), 0 0 0 4px rgba(13,13,13,1), 0 0 0 5px rgba(222,62,74,0.2)",
-      transition: { duration: 0.08 },
+      boxShadow: "0 0 0 1.5px rgba(255,255,255,0.65), 0 0 24px rgba(255,255,255,0.10)",
+      transition: { duration: 0.12 },
     });
     borderControls.start({
-      boxShadow: "0 0 0 1px rgba(222,62,74,0), 0 0 0 2px rgba(13,13,13,0), 0 0 0 3px rgba(222,62,74,0), 0 0 0 4px rgba(13,13,13,0), 0 0 0 5px rgba(222,62,74,0)",
-      transition: { duration: 0.9 },
+      boxShadow: "0 0 0 1px rgba(255,255,255,0.15), 0 0 0px rgba(255,255,255,0)",
+      transition: { duration: 0.88 },
     });
   };
 
   return (
-    <BentoCard className="col-span-4 relative flex flex-col gap-4 overflow-hidden">
-      <SignalBg />
-      <div className="relative z-[1] flex flex-col gap-4">
+    <BentoCard className="col-span-12 relative flex flex-col gap-4 overflow-hidden md:col-span-4">
+      <div className="pointer-events-none absolute inset-0" style={{ zIndex: 0 }}>
+        <CityScene />
+      </div>
+      <div className="pointer-events-none absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(to top, rgba(7,2,14,0.97) 45%, rgba(7,2,14,0.6) 75%, transparent 100%)" }} />
+      <div className="relative flex flex-col flex-1 gap-4" style={{ zIndex: 2 }}>
+      {/* SVG de fond — enveloppe discrète, coin bas-droit */}
+      <svg
+        className="pointer-events-none absolute -bottom-6 -right-6 opacity-[0.04]"
+        width="160" height="160" viewBox="0 0 24 24" fill="none"
+        stroke="white" strokeWidth="0.6" strokeLinecap="round" strokeLinejoin="round"
+        aria-hidden
+      >
+        <rect width="20" height="16" x="2" y="4" rx="2" />
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+      </svg>
+
       <SectionLabel text="Contact" />
       <div>
         <p className="text-xl font-semibold leading-snug text-white">
-          Open to the right<br />opportunity<span style={{ color: "#DE3E4A" }}>.</span>
+          Open to the right<br />opportunity<span style={{ color: "#ffffff" }}>.</span>
         </p>
         <p className="mt-1.5 text-sm leading-relaxed text-zinc-500">
           Editing, dev, or something in between — if the project is interesting, I&apos;m in.
@@ -494,9 +744,9 @@ function ContactCard() {
         href="mailto:quentincourtade33@gmail.com"
         className="relative flex items-center justify-center gap-2.5 overflow-hidden rounded-xl border px-4 py-3.5 text-sm font-medium"
         style={{
-          borderColor: "rgba(222,62,74,0.30)",
-          backgroundColor: "rgba(222,62,74,0.10)",
-          color: "#DE3E4A",
+          borderColor: "rgba(255,255,255,0.18)",
+          backgroundColor: "rgba(255,255,255,0.06)",
+          color: "#ffffff",
         }}
         animate={borderControls}
         onHoverStart={handleHoverStart}
@@ -548,13 +798,19 @@ function FlashBorder({ children }: { children: React.ReactNode }) {
 
   const handleHoverStart = async () => {
     animateEl(x, [0, 1.5, 0], { duration: 0.35, ease: "easeOut" });
-    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.9), 0 0 0 2px rgba(13,13,13,1), 0 0 0 3px rgba(255,255,255,0.45), 0 0 0 4px rgba(13,13,13,1), 0 0 0 5px rgba(255,255,255,0.15)", { duration: 0.08 });
-    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0 2px rgba(13,13,13,0), 0 0 0 3px rgba(255,255,255,0), 0 0 0 4px rgba(13,13,13,0), 0 0 0 5px rgba(255,255,255,0)", { duration: 0.9 });
+    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.30), 0 0 18px rgba(255,255,255,0.06)", { duration: 0.15 });
+    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0px rgba(255,255,255,0)", { duration: 0.85 });
   };
 
   return (
-    <motion.div style={{ x, boxShadow }} className="relative bento-card rounded-2xl p-5 cursor-pointer overflow-hidden" onHoverStart={handleHoverStart}>
-      {children}
+    <motion.div style={{ x, boxShadow }} className="bento-card rounded-2xl p-5 cursor-pointer relative" onHoverStart={handleHoverStart}>
+      <div className="pointer-events-none absolute inset-0" style={{ zIndex: 0 }}>
+        <StageScene />
+      </div>
+      <div className="pointer-events-none absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(to top, rgba(16,5,0,0.97) 40%, rgba(16,5,0,0.6) 70%, transparent 100%)" }} />
+      <div className="relative" style={{ zIndex: 2 }}>
+        {children}
+      </div>
     </motion.div>
   );
 }
@@ -587,12 +843,12 @@ function YoutubeTeaserCard() {
 
   const handleSeeAllHover = async () => {
     await seeAllControls.start({
-      boxShadow: "0 0 0 1px rgba(222,62,74,0.9), 0 0 0 2px rgba(13,13,13,1), 0 0 0 3px rgba(222,62,74,0.4)",
-      transition: { duration: 0.08 },
+      boxShadow: "0 0 0 1.5px rgba(255,255,255,0.65), 0 0 24px rgba(255,255,255,0.10)",
+      transition: { duration: 0.12 },
     });
     seeAllControls.start({
-      boxShadow: "0 0 0 1px rgba(222,62,74,0), 0 0 0 2px rgba(13,13,13,0), 0 0 0 3px rgba(222,62,74,0)",
-      transition: { duration: 0.9 },
+      boxShadow: "0 0 0 1px rgba(255,255,255,0.15), 0 0 0px rgba(255,255,255,0)",
+      transition: { duration: 0.88 },
     });
   };
 
@@ -600,12 +856,10 @@ function YoutubeTeaserCard() {
     <motion.div
       variants={card}
       whileHover={{ scale: 1.015, transition: { duration: 0.2 } }}
-      className="col-span-8"
+      className="col-span-12 md:col-span-8"
     >
       <Link href="/clients" className="block">
         <FlashBorder>
-          <FilmBg />
-          <div className="relative z-[1]">
           <div className="flex items-center justify-between mb-5">
             <div>
               <SectionLabel text="YouTube Clients" />
@@ -617,9 +871,9 @@ function YoutubeTeaserCard() {
             <motion.div
               className="group flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium"
               style={{
-                borderColor: "rgba(222,62,74,0.25)",
-                backgroundColor: "rgba(222,62,74,0.06)",
-                color: "#DE3E4A",
+                borderColor: "rgba(255,255,255,0.15)",
+                backgroundColor: "rgba(255,255,255,0.04)",
+                color: "#ffffff",
               }}
               animate={seeAllControls}
               onHoverStart={handleSeeAllHover}
@@ -650,7 +904,7 @@ function YoutubeTeaserCard() {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-semibold text-white">{channel.subsCurrent}</p>
-                      <p className="text-xs font-medium" style={{ color: "#DE3E4A" }}>
+                      <p className="text-xs font-medium" style={{ color: "#ffffff" }}>
                         {channel.growth}
                       </p>
                     </div>
@@ -659,7 +913,6 @@ function YoutubeTeaserCard() {
                 </div>
               );
             })}
-          </div>
           </div>
         </FlashBorder>
       </Link>
@@ -749,9 +1002,12 @@ function GitHubCard() {
   };
 
   return (
-    <BentoCard className="col-span-4 relative flex flex-col gap-4 overflow-hidden">
-      <CircuitBg />
-      <div className="relative z-[1] flex flex-col gap-4 flex-1">
+    <BentoCard className="col-span-12 flex flex-col gap-4 md:col-span-4">
+      <div className="pointer-events-none absolute inset-0" style={{ zIndex: 0 }}>
+        <ForestScene />
+      </div>
+      <div className="pointer-events-none absolute inset-0" style={{ zIndex: 1, background: "linear-gradient(to top, rgba(5,15,5,0.97) 40%, rgba(5,15,5,0.55) 70%, transparent 100%)" }} />
+      <div className="relative flex flex-col flex-1 gap-4" style={{ zIndex: 2 }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -877,7 +1133,7 @@ function GitHubCard() {
               className="h-1.5 rounded-full transition-all duration-200"
               style={{
                 width: i === index ? "20px" : "6px",
-                backgroundColor: i === index ? "#DE3E4A" : "rgba(255,255,255,0.15)",
+                backgroundColor: i === index ? "#ffffff" : "rgba(255,255,255,0.15)",
               }}
             />
           ))}
@@ -1033,8 +1289,8 @@ function WIPCard({ project }: { project: (typeof WIP_PROJECTS)[0] }) {
 
   const handleHoverStart = async () => {
     animateEl(x, [0, 1.5, 0], { duration: 0.35, ease: "easeOut" });
-    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.9), 0 0 0 2px rgba(13,13,13,1), 0 0 0 3px rgba(255,255,255,0.45), 0 0 0 4px rgba(13,13,13,1), 0 0 0 5px rgba(255,255,255,0.15)", { duration: 0.08 });
-    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0 2px rgba(13,13,13,0), 0 0 0 3px rgba(255,255,255,0), 0 0 0 4px rgba(13,13,13,0), 0 0 0 5px rgba(255,255,255,0)", { duration: 0.9 });
+    await animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0.30), 0 0 18px rgba(255,255,255,0.06)", { duration: 0.15 });
+    animateEl(boxShadow, "0 0 0 1px rgba(255,255,255,0), 0 0 0px rgba(255,255,255,0)", { duration: 0.85 });
   };
 
   return (
@@ -1107,7 +1363,7 @@ function DustEffect() {
     canvas.height = window.innerHeight;
 
     type Particle = { x: number; y: number; vx: number; vy: number; size: number; opacity: number; color: string };
-    const COLORS = ["#ffffff", "#ededed", "#a1a1aa", "#DE3E4A", "#71717a", "#52525b"];
+    const COLORS = ["#ffffff", "#ededed", "#a1a1aa", "#ffffff", "#71717a", "#52525b"];
     const particles: Particle[] = Array.from({ length: 500 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
@@ -1175,7 +1431,9 @@ export default function Home() {
   }, [killed, gridControls]);
 
   return (
-    <div className="min-h-screen py-10 md:py-16">
+    <>
+    <SpaceBackground />
+    <div className="min-h-screen px-4 py-10 md:px-8 lg:px-12 lg:py-16">
       {killed && <DustEffect />}
       {killed && (
         <motion.p
@@ -1183,14 +1441,13 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ delay: 2.2, duration: 0.6 }}
           className="fixed inset-0 z-9999 flex items-center justify-center font-mono text-[11px] tracking-[0.25em]"
-          style={{ color: "#DE3E4A" }}
+          style={{ color: "#ffffff" }}
         >
           SYSTEM TERMINATED — refresh to restore
         </motion.p>
       )}
-      <div className="overflow-x-auto scrollbar-hide px-4 md:overflow-visible md:px-8 lg:px-12">
       <motion.div
-        className="grid grid-cols-12 gap-3 min-w-[900px] md:max-w-6xl md:mx-auto md:min-w-0"
+        className="mx-auto grid max-w-6xl grid-cols-12 gap-3"
         variants={container}
         initial="hidden"
         animate={gridControls}
@@ -1209,7 +1466,7 @@ export default function Home() {
         <WIPCard project={WIP_PROJECTS[0]} />
         <WIPCard project={WIP_PROJECTS[1]} />
       </motion.div>
-      </div>
     </div>
+    </>
   );
 }

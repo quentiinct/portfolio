@@ -7,7 +7,7 @@
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
-  --accent: #DE3E4A;
+  --accent: #ffffff;
 }
 
 @theme inline {
@@ -19,10 +19,7 @@
 
 body {
   position: relative;
-  background:
-    radial-gradient(ellipse at 75% 55%, rgba(222, 62, 74, 0.09) 0%, transparent 55%),
-    radial-gradient(ellipse at 12% 15%, rgba(222, 62, 74, 0.05) 0%, transparent 35%),
-    #050505;
+  background: #030305;
   color: #ededed;
   font-family: var(--font-geist-sans), Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -66,39 +63,11 @@ body > * {
   box-sizing: border-box;
 }
 
-/*
-  Bordure lumineuse tournante — @property + conic-gradient
-
-  @property enregistre --border-angle comme propriété animable (CSS Houdini).
-  Sans ça, le navigateur ne sait pas interpoler un angle dans un gradient.
-  Le conic-gradient crée une tache lumineuse étroite qui tourne sur le contour.
-*/
-@property --border-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@keyframes border-rotate {
-  to { --border-angle: 360deg; }
-}
-
 .bento-card {
-  border: 1px solid transparent;
-  background:
-    linear-gradient(#111111, #111111) padding-box,
-    conic-gradient(
-      from var(--border-angle) at 50% 50%,
-      rgba(255, 255, 255, 0.02)  0deg,
-      rgba(255, 255, 255, 0.40) 60deg,
-      rgba(255, 255, 255, 0.02) 120deg,
-      rgba(255, 255, 255, 0.02) 360deg
-    ) border-box;
-  animation: border-rotate 6s linear infinite;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #0a0a0f;
+  overflow: hidden;
 }
-
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
 /*
   Grain / bruit de fond
