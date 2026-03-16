@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+
+# Quentin Courtade
+
+**Developer & Editor**
+
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+
+[quentincourtade.com](https://quentincourtade.com)
+
+</div>
+
+---
+
+## Overview
+
+Personal portfolio showcasing my work as a freelance developer and video editor. Built with a dark, immersive 8-bit pixel art aesthetic — animated space backgrounds, interactive pixel scenes, and a bento grid layout.
+
+### Features
+
+- **Bento grid layout** — Responsive card-based design with glassmorphism
+- **8-bit pixel art scenes** — Hand-coded SVG scenes per card (space station, forest, city, stage)
+- **Animated space background** — Canvas-rendered stars, planets with hover glow, shooting stars and a rocket with organic sine-wave movement
+- **YouTube client showcase** — Growth metrics, sparkline charts, and featured videos for 3 channels (350K → 750K+)
+- **GitHub integration** — Live repo carousel via GitHub API with caching
+- **Easter egg** — Type `/kill` in the hero terminal
+- **Framer Motion animations** — Staggered card reveals, hover flash borders, slide transitions
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS 4 |
+| Animations | Framer Motion 12 |
+| Rendering | Canvas 2D + SVG |
+| Fonts | Geist Sans & Geist Mono |
+
+## Project Structure
+
+```
+src/app/
+├── page.tsx              # Home — bento grid, hero, cards, pixel scenes
+├── layout.tsx            # Root layout, metadata, fonts
+├── globals.css           # Dark theme, glassmorphism, grain overlay
+├── data.ts               # YouTube channel data
+├── clients/
+│   └── page.tsx          # YouTube clients detail page
+└── components/
+    ├── SpaceBackground.tsx  # Canvas — stars, planets, rocket
+    └── StageScene.tsx       # SVG — stage/camera pixel scene
+```
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Start dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [localhost:3000](http://localhost:3000) to view.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Deployed on [Vercel](https://vercel.com). Push to `main` triggers automatic builds.
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All rights reserved.
